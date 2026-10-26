@@ -1,0 +1,159 @@
+/* Feuille de style de Mistral (J1-02). */
+
+/* Couleurs du thème clair : chaque paire texte/fond dépasse 4,5:1. */
+:root {
+  color-scheme: light dark;
+  --fond: #ffffff;
+  --surface: #f3f4f6;
+  --texte: #1a1a1a;
+  --bordure: #6b7280;
+  --accent: #0b5394;
+  --accent-texte: #ffffff;
+  --focus: #b45309;
+}
+
+/* Thème sombre quand le système le demande. */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fond: #121212;
+    --surface: #1e1e1e;
+    --texte: #ededed;
+    --bordure: #9ca3af;
+    --accent: #8ab4f8;
+    --accent-texte: #0d0d0d;
+    --focus: #fbbf24;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 100%;
+  line-height: 1.5;
+}
+
+body {
+  margin: 0;
+  min-width: 0;
+  background: var(--fond);
+  color: var(--texte);
+}
+
+/* Lien d'évitement : caché hors écran, visible au focus clavier. */
+a[href="#contenu"] {
+  position: absolute;
+  left: 1rem;
+  top: -10rem;
+  padding: 0.5rem 1rem;
+  background: var(--accent);
+  color: var(--accent-texte);
+  border-radius: 0.25rem;
+}
+
+a[href="#contenu"]:focus {
+  top: 1rem;
+}
+
+a {
+  color: var(--accent);
+}
+
+main {
+  width: 100%;
+  max-width: 48rem;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+h1 {
+  margin: 0 0 1rem;
+  font-size: 1.75rem;
+}
+
+/* Historique : les mots très longs sont coupés au lieu de déborder. */
+#historique {
+  list-style: none;
+  margin: 0 0 1rem;
+  padding: 0.75rem;
+  min-height: 12rem;
+  background: var(--surface);
+  border: 1px solid var(--bordure);
+  border-radius: 0.5rem;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.msg {
+  max-width: 100%;
+  margin: 0 0 0.5rem;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
+  background: var(--fond);
+  border: 1px solid var(--bordure);
+}
+
+.msg[data-role="user"] {
+  margin-left: auto;
+  width: fit-content;
+  background: var(--accent);
+  color: var(--accent-texte);
+  border-color: var(--accent);
+}
+
+.msg[data-role="bot"] {
+  width: fit-content;
+}
+
+/* Formulaire : passe sur plusieurs lignes sur petit écran. */
+#formulaire {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+#formulaire label {
+  flex: 1 1 100%;
+  font-weight: 600;
+}
+
+#message {
+  flex: 1 1 12rem;
+  min-width: 0;
+  padding: 0.625rem 0.75rem;
+  font: inherit;
+  color: var(--texte);
+  background: var(--fond);
+  border: 1px solid var(--bordure);
+  border-radius: 0.375rem;
+}
+
+button {
+  padding: 0.625rem 1.25rem;
+  font: inherit;
+  font-weight: 600;
+  color: var(--accent-texte);
+  background: var(--accent);
+  border: 2px solid var(--accent);
+  border-radius: 0.375rem;
+  cursor: pointer;
+}
+
+button:hover {
+  filter: brightness(1.1);
+}
+
+/* Contour visible au clavier sur tous les éléments interactifs. */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
