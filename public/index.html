@@ -1,5 +1,30 @@
 <!doctype html>
-<html>
-  <head></head>
-  <body></body>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Assistant</title>
+  </head>
+
+  <body>
+    <a href="#contenu">Aller au contenu</a>
+
+    <main id="contenu">
+      <h1>Harfang-Agile-26</h1>
+
+      <ul id="historique" aria-live="polite"></ul>
+
+      <form id="formulaire">
+        <label for="message">Votre message :</label>
+        <input
+          type="text"
+          id="message"
+          name="message"
+          required
+          maxlength="500"
+        >
+        <button id="envoyer" type="submit">Envoyer</button>
+      </form>
+    </main>
+  </body>
 </html>
