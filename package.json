@@ -1,0 +1,12 @@
+{
+  "name": "capweb-etudiant",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server/serveur.mjs",
+    "test": "node --test \"tests/publics/*.test.mjs\"",
+    "filet": "node scripts/filet.mjs",
+    "verifier-poste": "node scripts/verifier-poste.mjs"
+  }
+}
