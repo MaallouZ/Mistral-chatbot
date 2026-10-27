@@ -1,9 +1,9 @@
-// Chef d'orchestre : relie la page au cerveau (brain.js).
-
-import { validerMessage, repondre, REGLES } from "./brain.js";
+import { validerMessage, creerMoteur, REGLES } from "./brain.js";
+import { afficher } from "./view.js";
 
 const LIMITE = 130;
 const ASSISTANT = "Mistral";
+const moteur = creerMoteur(REGLES, ASSISTANT);
 const MAX_MESSAGES = 20;
 const etat = [];
 window.etat = etat;
@@ -14,30 +14,6 @@ const historique = document.querySelector("#historique");
 const statut = document.querySelector("#statut");
 const compteur = document.querySelector("#compteur");
 const effacer = document.querySelector("#effacer");
-const lignes = new WeakMap();
-
-
-function afficher() {
-  const lis = [];
-
-  for (const message of etat) {
-    let li = lignes.get(message);
-
-    if (!li) {
-      li = document.createElement("li");
-      li.className = "msg";
-      li.dataset.role = message.role;
-      li.textContent = message.text;
-      lignes.set(message, li);
-    }
-
-    lis.push(li);
-  }
-
-  historique.replaceChildren(...lis);
-}
-
-
 
 formulaire.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -56,13 +32,13 @@ formulaire.addEventListener("submit", (event) => {
   }
 
   etat.push({ role: "user", text: texte.trim() });
-  etat.push({ role: "bot", text: repondre(texte, REGLES, ASSISTANT) });
+  etat.push({ role: "bot", text: moteur.repondre(texte) });
 
     while (etat.length > MAX_MESSAGES) {
     etat.shift();
   }
 
-  afficher();
+  afficher(historique, etat);
 
 
   statut.textContent = "";
@@ -79,7 +55,7 @@ champ.addEventListener("input", mettreAJourCompteur);
 
 effacer.addEventListener("click", () => {
   etat.length = 0;
-  afficher();
+  afficher(historique, etat);
   statut.textContent = "Historique effacé.";
   champ.focus();
 });
