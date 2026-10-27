@@ -5,6 +5,7 @@ const LIMITE = 130;
 const ASSISTANT = "Mistral";
 const moteur = creerMoteur(REGLES, ASSISTANT);
 const MAX_MESSAGES = 20;
+const CLE = "capweb.mistral.v1";
 const etat = [];
 window.etat = etat;
 
@@ -34,9 +35,10 @@ formulaire.addEventListener("submit", (event) => {
   etat.push({ role: "user", text: texte.trim() });
   etat.push({ role: "bot", text: moteur.repondre(texte) });
 
-    while (etat.length > MAX_MESSAGES) {
+  while (etat.length > MAX_MESSAGES) {
     etat.shift();
   }
+  sauvegarder();
 
   afficher(historique, etat);
 
@@ -51,11 +53,32 @@ function mettreAJourCompteur() {
   compteur.textContent = `${champ.value.length} / ${LIMITE}`;
 }
 
+function sauvegarder(){
+  localStorage.setItem(CLE,JSON.stringify(etat));
+}
+
+function charger() {
+  try {
+    const donnees = JSON.parse(localStorage.getItem(CLE));
+    if (Array.isArray(donnees)) {
+      return donnees;
+    }
+  } catch {
+    // Pas du JSON valide : on repart d'un historique vide.
+  }
+  return [];
+}
+
+
 champ.addEventListener("input", mettreAJourCompteur);
 
 effacer.addEventListener("click", () => {
   etat.length = 0;
+  sauvegarder();
   afficher(historique, etat);
   statut.textContent = "Historique effacé.";
   champ.focus();
 });
+
+etat.push(...charger());
+afficher(historique, etat);
