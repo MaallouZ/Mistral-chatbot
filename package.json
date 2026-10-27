@@ -6,7 +6,11 @@
   "scripts": {
     "start": "node server/serveur.mjs",
     "test": "node --test \"tests/publics/*.test.mjs\"",
+    "lint": "eslint public",
     "filet": "node scripts/filet.mjs",
     "verifier-poste": "node scripts/verifier-poste.mjs"
+  },
+  "devDependencies": {
+    "eslint": "10.10.0"
   }
 }
