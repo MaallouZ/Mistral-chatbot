@@ -4,6 +4,9 @@ import { validerMessage, repondre, REGLES } from "./brain.js";
 
 const LIMITE = 130;
 const ASSISTANT = "Mistral";
+const MAX_MESSAGES = 20;
+const etat = [];
+window.etat = etat;
 
 const formulaire = document.querySelector("#formulaire");
 const champ = document.querySelector("#message");
@@ -11,14 +14,30 @@ const historique = document.querySelector("#historique");
 const statut = document.querySelector("#statut");
 const compteur = document.querySelector("#compteur");
 const effacer = document.querySelector("#effacer");
+const lignes = new WeakMap();
 
-function ajouterMessage(texte, role) {
-  const li = document.createElement("li");
-  li.className = "msg";
-  li.dataset.role = role;
-  li.textContent = texte;
-  historique.append(li);
+
+function afficher() {
+  const lis = [];
+
+  for (const message of etat) {
+    let li = lignes.get(message);
+
+    if (!li) {
+      li = document.createElement("li");
+      li.className = "msg";
+      li.dataset.role = message.role;
+      li.textContent = message.text;
+      lignes.set(message, li);
+    }
+
+    lis.push(li);
+  }
+
+  historique.replaceChildren(...lis);
 }
+
+
 
 formulaire.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -36,8 +55,15 @@ formulaire.addEventListener("submit", (event) => {
     return;
   }
 
-  ajouterMessage(texte.trim(), "user");
-  ajouterMessage(repondre(texte, REGLES, ASSISTANT), "bot");
+  etat.push({ role: "user", text: texte.trim() });
+  etat.push({ role: "bot", text: repondre(texte, REGLES, ASSISTANT) });
+
+    while (etat.length > MAX_MESSAGES) {
+    etat.shift();
+  }
+
+  afficher();
+
 
   statut.textContent = "";
   champ.value = "";
@@ -52,7 +78,8 @@ function mettreAJourCompteur() {
 champ.addEventListener("input", mettreAJourCompteur);
 
 effacer.addEventListener("click", () => {
-  historique.replaceChildren();
+  etat.length = 0;
+  afficher();
   statut.textContent = "Historique effacé.";
   champ.focus();
 });
