@@ -81,13 +81,23 @@ async function chargerSuggestions() {
       throw new Error("Format de réponse inattendu");
     }
 
+    if (donnees.suggestions.length === 0) {
+      zoneSuggestions.textContent = "Aucune suggestion";
+      return;
+    }
+
     zoneSuggestions.replaceChildren();
     for (const texte of donnees.suggestions) {
       zoneSuggestions.append(creerBoutonSuggestion(texte));
     }
   } catch {
     zoneSuggestions.textContent = "Une erreur empêche de charger les suggestions.";
-  } finally {
+    const reessayer = document.createElement("button");
+    reessayer.type = "button";
+    reessayer.textContent = "Réessayer";
+    reessayer.addEventListener("click", chargerSuggestions);
+    zoneSuggestions.append(reessayer);
+
     zoneSuggestions.removeAttribute("aria-busy");
   }
 }
