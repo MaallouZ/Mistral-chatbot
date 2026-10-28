@@ -56,4 +56,11 @@ describe("serveur de bout en bout", () => {
     const reponse = await fetch(`${serveur.url}/api/chat`);
     assert.equal(reponse.status, 405);
   });
+
+  it("répond ok sur /api/health", async () => {
+    const reponse = await fetch(`${serveur.url}/api/health`);
+    assert.equal(reponse.status, 200);
+    assert.deepEqual(await reponse.json(), { status: "ok" });
+  });
+
 });

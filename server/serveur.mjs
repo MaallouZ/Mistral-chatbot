@@ -50,6 +50,9 @@ export function demarrer({ port = 0, racine, api = null } = {}) {
   const serveur = http.createServer(async (req, res) => {
     if (api && (await api(req, res))) return;
     const urlObj = new URL(req.url ?? "/", "http://127.0.0.1");
+    if (urlObj.pathname === "/api/health") {
+      return repondreJson(res, 200, { status: "ok" });
+    }
     if (urlObj.pathname === "/api/chat") {
       if (req.method !== "POST") {
         return repondreJson(res, 405, { erreur: "Méthode POST attendue" });

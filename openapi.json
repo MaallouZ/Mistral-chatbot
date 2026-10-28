@@ -1,0 +1,65 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "API de Mistral",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/chat": {
+      "post": {
+        "summary": "Envoie un message à Mistral et reçoit sa réponse",
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "required": ["message"],
+                "properties": {
+                  "message": { "type": "string", "maxLength": 130 }
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "La réponse de Mistral",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "reply": { "type": "string" }
+                  }
+                }
+              }
+            }
+          },
+          "400": { "description": "Message vide, trop long, ou corps qui n'est pas du JSON" },
+          "405": { "description": "Méthode autre que POST" }
+        }
+      }
+    },
+    "/api/health": {
+      "get": {
+        "summary": "Indique que le serveur fonctionne",
+        "responses": {
+          "200": {
+            "description": "Le serveur est en forme",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "status": { "type": "string", "example": "ok" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
