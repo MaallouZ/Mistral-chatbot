@@ -88,6 +88,14 @@ h1 {
   word-break: break-word;
 }
 
+#suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0 0 1rem;
+}
+
+
 .msg {
   max-width: 100%;
   margin: 0 0 0.5rem;

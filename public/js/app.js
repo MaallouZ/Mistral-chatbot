@@ -6,6 +6,7 @@ const ASSISTANT = "Mistral";
 const moteur = creerMoteur(REGLES, ASSISTANT);
 const MAX_MESSAGES = 20;
 const CLE = "capweb.mistral.v1";
+const ROUTE_SUGGESTIONS = "/api/debuts";
 const etat = [];
 window.etat = etat;
 
@@ -15,6 +16,7 @@ const historique = document.querySelector("#historique");
 const statut = document.querySelector("#statut");
 const compteur = document.querySelector("#compteur");
 const effacer = document.querySelector("#effacer");
+const zoneSuggestions = document.querySelector("#suggestions");
 
 formulaire.addEventListener("submit", (event) => {
   event.preventDefault();
@@ -51,6 +53,45 @@ formulaire.addEventListener("submit", (event) => {
 function mettreAJourCompteur() {
   compteur.textContent = `${champ.value.length} / ${LIMITE}`;
 }
+
+function creerBoutonSuggestion(texte) {
+  const bouton = document.createElement("button");
+  bouton.type = "button";
+  bouton.textContent = texte;
+  bouton.addEventListener("click", () => {
+    champ.value = texte;
+    mettreAJourCompteur();
+    champ.focus();
+  });
+  return bouton;
+}
+
+async function chargerSuggestions() {
+  zoneSuggestions.setAttribute("aria-busy", "true");
+  zoneSuggestions.textContent = "Chargement des suggestions…";
+
+  try {
+    const reponse = await fetch(ROUTE_SUGGESTIONS);
+    if (!reponse.ok) {
+      throw new Error(`Le serveur a répondu ${reponse.status}`);
+    }
+
+    const donnees = await reponse.json();
+    if (!Array.isArray(donnees?.suggestions)) {
+      throw new Error("Format de réponse inattendu");
+    }
+
+    zoneSuggestions.replaceChildren();
+    for (const texte of donnees.suggestions) {
+      zoneSuggestions.append(creerBoutonSuggestion(texte));
+    }
+  } catch {
+    zoneSuggestions.textContent = "Une erreur empêche de charger les suggestions.";
+  } finally {
+    zoneSuggestions.removeAttribute("aria-busy");
+  }
+}
+
 
 function sauvegarder() {
   try {
@@ -99,3 +140,4 @@ window.addEventListener("storage", (event) => {
 
 etat.push(...charger());
 afficher(historique, etat);
+chargerSuggestions();
