@@ -15,6 +15,10 @@ describe("validerMessage", () => {
     assert.equal(validerMessage("bonjour", 130).ok, true);
   });
 
+  it("refuse un message absent (undefined)", () => {
+    assert.equal(validerMessage(undefined, 130).ok, false);
+  });
+
   it("refuse un message vide", () => {
     const resultat = validerMessage("", 130);
     assert.equal(resultat.ok, false);
@@ -50,6 +54,10 @@ describe("validerMessage", () => {
 describe("repondre", () => {
   it("donne la réponse de la première règle", () => {
     assert.equal(repondre("clavier", REGLES, "Mistral"), "Réponse clavier");
+  });
+  
+  it("donne la réponse par défaut sans message (undefined)", () => {
+    assert.ok(repondre(undefined, REGLES, "Zorglub").includes("Zorglub"));
   });
 
   it("donne la réponse de la deuxième règle", () => {
