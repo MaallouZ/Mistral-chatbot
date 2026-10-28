@@ -90,14 +90,14 @@ async function chargerSuggestions() {
     for (const texte of donnees.suggestions) {
       zoneSuggestions.append(creerBoutonSuggestion(texte));
     }
-  } catch {
+    } catch {
     zoneSuggestions.textContent = "Une erreur empêche de charger les suggestions.";
     const reessayer = document.createElement("button");
     reessayer.type = "button";
     reessayer.textContent = "Réessayer";
     reessayer.addEventListener("click", chargerSuggestions);
     zoneSuggestions.append(reessayer);
-
+  } finally {
     zoneSuggestions.removeAttribute("aria-busy");
   }
 }
