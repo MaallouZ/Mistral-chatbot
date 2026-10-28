@@ -8,6 +8,7 @@ const MAX_MESSAGES = 20;
 const CLE = "capweb.mistral.v1";
 const ROUTE_SUGGESTIONS = "/api/debuts";
 const ROUTE_CHAT = "/api/chat";
+const DELAI_MAX_MS = 3000;
 const etat = [];
 window.etat = etat;
 
@@ -52,12 +53,17 @@ formulaire.addEventListener("submit", async (event) => {
   try {
     const reponse = await demanderReponse(message);
     etat.push({ role: "bot", text: reponse });
-  } catch {
-    statut.textContent = "Le service ne répond pas : réponse locale.";
+    } catch (erreur) {
+    if (erreur.name === "AbortError") {
+      statut.textContent = "Le service a mis plus de 3 secondes : demande abandonnée, réponse locale.";
+    } else {
+      statut.textContent = "Le service ne répond pas : réponse locale.";
+    }
     etat.push({ role: "bot", text: moteur.repondre(message) });
   } finally {
     envoyer.disabled = false;
   }
+
   enregistrer();
 });
 
@@ -75,22 +81,31 @@ function enregistrer() {
 }
 
 async function demanderReponse(message) {
-  const reponse = await fetch(ROUTE_CHAT, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ message }),
-  });
+  const controleur = new window.AbortController();
+  const minuteur = window.setTimeout(() => controleur.abort(), DELAI_MAX_MS);
 
-  if (!reponse.ok) {
-    throw new Error(`Le service a répondu ${reponse.status}`);
-  }
+  try {
+    const reponse = await fetch(ROUTE_CHAT, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ message }),
+      signal: controleur.signal,
+    });
 
-  const donnees = await reponse.json();
-  if (typeof donnees?.reply !== "string") {
-    throw new Error("Réponse du service inattendue");
+    if (!reponse.ok) {
+      throw new Error(`Le service a répondu ${reponse.status}`);
+    }
+
+    const donnees = await reponse.json();
+    if (typeof donnees?.reply !== "string") {
+      throw new Error("Réponse du service inattendue");
+    }
+    return donnees.reply;
+  } finally {
+    window.clearTimeout(minuteur);
   }
-  return donnees.reply;
 }
+
 
 function creerBoutonSuggestion(texte) {
   const bouton = document.createElement("button");
