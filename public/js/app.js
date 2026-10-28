@@ -7,6 +7,7 @@ const moteur = creerMoteur(REGLES, ASSISTANT);
 const MAX_MESSAGES = 20;
 const CLE = "capweb.mistral.v1";
 const ROUTE_SUGGESTIONS = "/api/debuts";
+const ROUTE_CHAT = "/api/chat";
 const etat = [];
 window.etat = etat;
 
@@ -17,9 +18,14 @@ const statut = document.querySelector("#statut");
 const compteur = document.querySelector("#compteur");
 const effacer = document.querySelector("#effacer");
 const zoneSuggestions = document.querySelector("#suggestions");
+const envoyer = document.querySelector("#envoyer");
 
-formulaire.addEventListener("submit", (event) => {
+formulaire.addEventListener("submit", async (event) => {
   event.preventDefault();
+
+  if (envoyer.disabled) {
+    return;
+  }
 
   const texte = champ.value;
   const verdict = validerMessage(texte, LIMITE);
@@ -34,24 +40,56 @@ formulaire.addEventListener("submit", (event) => {
     return;
   }
 
-  etat.push({ role: "user", text: texte.trim() });
-  etat.push({ role: "bot", text: moteur.repondre(texte) });
-
-    while (etat.length > MAX_MESSAGES) {
-    etat.shift();
-  }
-
+  const message = texte.trim();
   statut.textContent = "";
-  sauvegarder();
-  afficher(historique, etat);
-
+  etat.push({ role: "user", text: message });
+  enregistrer();
   champ.value = "";
   mettreAJourCompteur();
   champ.focus();
+
+  envoyer.disabled = true;
+  try {
+    const reponse = await demanderReponse(message);
+    etat.push({ role: "bot", text: reponse });
+  } catch {
+    statut.textContent = "Le service ne répond pas : réponse locale.";
+    etat.push({ role: "bot", text: moteur.repondre(message) });
+  } finally {
+    envoyer.disabled = false;
+  }
+  enregistrer();
 });
+
 
 function mettreAJourCompteur() {
   compteur.textContent = `${champ.value.length} / ${LIMITE}`;
+}
+
+function enregistrer() {
+  while (etat.length > MAX_MESSAGES) {
+    etat.shift();
+  }
+  sauvegarder();
+  afficher(historique, etat);
+}
+
+async function demanderReponse(message) {
+  const reponse = await fetch(ROUTE_CHAT, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ message }),
+  });
+
+  if (!reponse.ok) {
+    throw new Error(`Le service a répondu ${reponse.status}`);
+  }
+
+  const donnees = await reponse.json();
+  if (typeof donnees?.reply !== "string") {
+    throw new Error("Réponse du service inattendue");
+  }
+  return donnees.reply;
 }
 
 function creerBoutonSuggestion(texte) {

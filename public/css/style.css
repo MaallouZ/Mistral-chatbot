@@ -156,6 +156,11 @@ button:hover {
   filter: brightness(1.1);
 }
 
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* Contour visible au clavier sur tous les éléments interactifs. */
 a:focus-visible,
 button:focus-visible,
