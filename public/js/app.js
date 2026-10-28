@@ -20,6 +20,7 @@ const compteur = document.querySelector("#compteur");
 const effacer = document.querySelector("#effacer");
 const zoneSuggestions = document.querySelector("#suggestions");
 const envoyer = document.querySelector("#envoyer");
+const mode = document.querySelector("#mode");
 
 formulaire.addEventListener("submit", async (event) => {
   event.preventDefault();
@@ -53,12 +54,14 @@ formulaire.addEventListener("submit", async (event) => {
   try {
     const reponse = await demanderReponse(message);
     etat.push({ role: "bot", text: reponse });
+    mode.textContent= "";
     } catch (erreur) {
     if (erreur.name === "AbortError") {
       statut.textContent = "Le service a mis plus de 3 secondes : demande abandonnée, réponse locale.";
     } else {
       statut.textContent = "Le service ne répond pas : réponse locale.";
     }
+    mode.textContent = "réponse locale";
     etat.push({ role: "bot", text: moteur.repondre(message) });
   } finally {
     envoyer.disabled = false;
