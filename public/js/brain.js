@@ -11,7 +11,7 @@ export const REGLES = [
  * Vérifie qu'un message peut être envoyé.
  * @param {string} texte - Le message tapé par l'utilisateur.
  * @param {number} limite - Le nombre maximal de caractères.
- * @returns {{ ok: boolean, raison?: string }} ok à true, sinon la raison ("vide" ou "trop-long").
+ * @returns {{ ok: boolean, raison?: string, texte?: string }} ok à true avec le texte nettoyé, sinon la raison ("vide" ou "trop-long").
  */
 
 export function validerMessage(texte, limite) {
@@ -30,7 +30,7 @@ export function validerMessage(texte, limite) {
     };
   }
 
-  return { ok: true };
+  return { ok: true, texte: propre };
 }
 
 /**

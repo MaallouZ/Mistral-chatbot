@@ -7,4 +7,9 @@ describe("non-régression : espaces retirés des deux côtés", () => {
     const texte = "a".repeat(130) + "   ";
     assert.equal(validerMessage(texte, 130).ok, true);
   });
+  
+  it("renvoie le message sans les espaces de la fin", () => {
+    assert.deepEqual(validerMessage("abc   ", 130), { ok: true, texte: "abc" });
+  });
+
 });
