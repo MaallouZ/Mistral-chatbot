@@ -95,6 +95,17 @@ h1 {
   margin: 0 0 1rem;
 }
 
+#mode:not(:empty) {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border: 2px solid var(--focus);
+  border-radius: 999px;
+  font-weight: 600;
+}
+
+#mode:not(:empty)::before {
+  content: "Hors ligne : ";
+}
 
 .msg {
   max-width: 100%;
@@ -115,6 +126,14 @@ h1 {
 
 .msg[data-role="bot"] {
   width: fit-content;
+}
+
+.msg[data-source="local"]::after {
+  content: "réponse locale, service indisponible";
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.8rem;
+  font-style: italic;
 }
 
 /* Formulaire : passe sur plusieurs lignes sur petit écran. */

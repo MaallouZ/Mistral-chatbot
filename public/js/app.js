@@ -9,6 +9,7 @@ const CLE = "capweb.mistral.v1";
 const ROUTE_SUGGESTIONS = "/api/debuts";
 const ROUTE_CHAT = "/api/chat";
 const DELAI_MAX_MS = 3000;
+const reponsesLocales = new WeakSet();
 const etat = [];
 window.etat = etat;
 
@@ -57,12 +58,15 @@ formulaire.addEventListener("submit", async (event) => {
     mode.textContent= "";
     } catch (erreur) {
     if (erreur.name === "AbortError") {
-      statut.textContent = "Le service a mis plus de 3 secondes : demande abandonnée, réponse locale.";
+      statut.textContent = "Le service a mis plus de 3 secondes : demande abandonnée.";
     } else {
-      statut.textContent = "Le service ne répond pas : réponse locale.";
+      statut.textContent = "Le service ne répond pas.";
     }
     mode.textContent = "réponse locale";
-    etat.push({ role: "bot", text: moteur.repondre(message) });
+    const reponseLocale = { role: "bot", text: moteur.repondre(message) };
+    reponsesLocales.add(reponseLocale);
+    etat.push(reponseLocale);
+
   } finally {
     envoyer.disabled = false;
   }
@@ -80,7 +84,7 @@ function enregistrer() {
     etat.shift();
   }
   sauvegarder();
-  afficher(historique, etat);
+  afficher(historique, etat, reponsesLocales);
 }
 
 async function demanderReponse(message) {
@@ -188,7 +192,7 @@ champ.addEventListener("input", mettreAJourCompteur);
 
 effacer.addEventListener("click", () => {
   etat.length = 0;
-  afficher(historique, etat);
+  afficher(historique, etat, reponsesLocales);
   statut.textContent = "Historique effacé.";
   sauvegarder();
   champ.focus();
@@ -200,10 +204,10 @@ window.addEventListener("storage", (event) => {
   }
   etat.length = 0;
   etat.push(...charger());
-  afficher(historique, etat);
+  afficher(historique, etat, reponsesLocales);
 });
 
 
 etat.push(...charger());
-afficher(historique, etat);
+afficher(historique, etat, reponsesLocales);
 chargerSuggestions();
