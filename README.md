@@ -25,12 +25,19 @@ Ouvrez ensuite http://127.0.0.1:3000 dans le navigateur. Arrêtez le serveur ave
 ```bash
 npm test
 npm run e2e
-npm run lint
 ```
 
 - `npm test` lance les tests unitaires de la logique (`tests/unitaires/`).
 - `npm run e2e` démarre le vrai serveur et lui envoie de vraies requêtes (`tests/e2e/`).
-- `npm run lint` vérifie le code de la page avec ESLint.
+
+## Qualité du code
+
+```bash
+npm run lint
+```
+
+ESLint vérifie le code de la page : il interdit notamment `innerHTML` et les clés secrètes écrites en clair.
+
 
 ## Modules
 
